@@ -20,7 +20,10 @@
     preloadImg: true,
 
     // used to restrict the styling to only certain elements of the form
-    restrictSelector: ''
+    restrictSelector: '',
+
+    // restrict styleing only to these elements
+    restrictElements: 'submit text checkbox radio textarea select'.split(' ')
   };
   var jqTransformImgPreloaded = false;
 
@@ -466,12 +469,30 @@
       else {
         context = this;
       }
-      $('input:submit, input:reset, input[type="button"]', context).jqTransInputButton();
-      $('input:text, input:password', context).jqTransInputText();
-      $('input:checkbox', context).jqTransCheckBox();
-      $('input:radio', context).jqTransRadio();
-      $('textarea', context).jqTransTextarea();
-      $('select', context).jqTransSelect()
+
+      if ($.inArray('submit', opt.restrictElements) > -1) {
+        $('input:submit, input:reset, input[type="button"]', context).jqTransInputButton();
+      }
+
+      if ($.inArray('text', opt.restrictElements) > -1) {
+        $('input:text, input:password', context).jqTransInputText();
+      }
+
+      if ($.inArray('checkbox', opt.restrictElements) > -1) {
+        $('input:checkbox', context).jqTransCheckBox();
+      }
+
+      if ($.inArray('radio', opt.restrictElements) > -1) {
+        $('input:radio', context).jqTransRadio();
+      }
+
+      if ($.inArray('textarea', opt.restrictElements) > -1) {
+        $('textarea', context).jqTransTextarea();
+      }
+
+      if ($.inArray('select', opt.restrictElements) > -1) {
+        $('select', context).jqTransSelect();
+      }
 
       selfForm.bind('reset', function () {
         var action = function () {
