@@ -16,7 +16,12 @@
  ******************************************** */
 
 (function ($) {
-  var defaultOptions = {preloadImg:true};
+  var defaultOptions = {
+    preloadImg: true,
+
+    // used to restrict the styling to only certain elements of the form
+    restrictSelector: ''
+  };
   var jqTransformImgPreloaded = false;
 
   var jqTransformPreloadHoverFocusImg = function (strImgUrl) {
@@ -449,18 +454,24 @@
 
     /* each form */
     return this.each(function () {
-      var selfForm = $(this);
+      var selfForm = $(this), context;
       if (selfForm.hasClass('jqtransformdone')) {
         return;
       }
       selfForm.addClass('jqtransformdone');
 
-      $('input:submit, input:reset, input[type="button"]', this).jqTransInputButton();
-      $('input:text, input:password', this).jqTransInputText();
-      $('input:checkbox', this).jqTransCheckBox();
-      $('input:radio', this).jqTransRadio();
-      $('textarea', this).jqTransTextarea();
-      $('select', this).jqTransSelect()
+      if (opt.restrictSelector) {
+        context = $(opt.restrictSelector, this);
+      }
+      else {
+        context = this;
+      }
+      $('input:submit, input:reset, input[type="button"]', context).jqTransInputButton();
+      $('input:text, input:password', context).jqTransInputText();
+      $('input:checkbox', context).jqTransCheckBox();
+      $('input:radio', context).jqTransRadio();
+      $('textarea', context).jqTransTextarea();
+      $('select', context).jqTransSelect()
 
       selfForm.bind('reset', function () {
         var action = function () {
