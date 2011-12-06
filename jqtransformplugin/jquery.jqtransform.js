@@ -36,7 +36,6 @@
     imgFocus.src = strImgUrl.replace(/\.([a-zA-Z]*)$/, '-focus.$1');
   };
 
-
   /***************************
    Labels
    ***************************/
@@ -98,6 +97,24 @@
     });
   };
 
+  /**
+   * Use this function to get the dimension of an element. If the jQuery Actual
+   * plugin is enabled this function will use it. This solves the problem with
+   * hidden elements that don't report a dimension.
+   *
+   * @param method
+   */
+  $.fn.jqTransformGetDimension = function (method) {
+    if ($.fn.actual) {
+      // use jQuery Actual plugin to get the dimension
+      return this.actual(method);
+    }
+    else {
+      // use standard jQuery dimensions method
+      return $.fn[method].call(this);
+    }
+  };
+
   /***************************
    Buttons
    ***************************/
@@ -137,7 +154,7 @@
         $input.focus();
       });
 
-      var inputSize = $input.width();
+      var inputSize = $input.jqTransformGetDimension('width');
       if ($input.attr('size')) {
         inputSize = $input.attr('size') * 10;
         $input.css('width', inputSize);
@@ -162,7 +179,7 @@
 
       /* If this is safari we need to add an extra class */
       $.browser.safari && $wrapper.addClass('jqTransformSafari');
-      $.browser.safari && $input.css('width', $wrapper.width() + 16);
+      $.browser.safari && $input.css('width', $wrapper.jqTransformGetDimension('width') + 16);
       this.wrapper = $wrapper;
 
     });
@@ -297,8 +314,8 @@
         $('#jqTransformTextarea-mm', oTable)
           .addClass('jqTransformSafariTextarea')
           .find('div')
-          .css('height', textarea.height())
-          .css('width', textarea.width())
+          .css('height', textarea.jqTransformGetDimension('height'))
+          .css('width', textarea.jqTransformGetDimension('width'))
         ;
       }
     });
@@ -325,7 +342,8 @@
 
         /* Now add the html for the select */
         $wrapper.prepend('<div><span></span><a href="#" class="jqTransformSelectOpen"></a></div><ul></ul>');
-        var $ul = $('ul', $wrapper).css('width', $select.width()).hide();
+        var $select_width = $select.jqTransformGetDimension('width');
+        var $ul = $('ul', $wrapper).css('width', $select_width).hide();
         /* Now we add the options */
         $('option', this).each(function (i) {
           var oLi = $('<li><a href="#" index="' + i + '">' + $(this).html() + '</a></li>');
@@ -385,7 +403,8 @@
             }
 
             // Calculate width every time to adjust for any DOM changes
-            $ul.css({width: ($wrapper.width() - 1) + 'px'});
+            var $select_width = $select.jqTransformGetDimension('width');
+            $ul.css({width: ($select_width - 1) + 'px'});
             $ul.slideToggle('fast', function () {
               var offSet = ($('a.selected', $ul).offset().top - $ul.offset().top);
               $ul.animate({scrollTop: offSet});
@@ -415,11 +434,11 @@
           return false;
         })
         ;
-
         // Set the new width
-        var iSelectWidth = $select.outerWidth();
+        var iSelectWidth = $select.jqTransformGetDimension('outerWidth');
         var oSpan = $('span:first', $wrapper);
-        var newWidth = (iSelectWidth > oSpan.innerWidth()) ? iSelectWidth + oLinkOpen.outerWidth() : $wrapper.width();
+        // var newWidth = (iSelectWidth > oSpan.innerWidth()) ? iSelectWidth + oLinkOpen.outerWidth() : $wrapper.width();
+        var newWidth = iSelectWidth;
         $wrapper.css({width: newWidth});
 
         // Calculate the height if necessary, less elements that the default height
@@ -439,8 +458,8 @@
             }
           });
         }
-        var iSelectHeight = ($('li', $ul).length) * ($('li:first', $ul).height());//+1 else bug ff
-        (iSelectHeight < $ul.height()) && $ul.css({height: iSelectHeight, 'overflow': 'hidden'});//hidden else bug with ff
+        var iSelectHeight = ($('li', $ul).length) * ($('li:first', $ul).jqTransformGetDimension('height'));//+1 else bug ff
+        (iSelectHeight < $ul.jqTransformGetDimension('height')) && $ul.css({height: iSelectHeight, 'overflow': 'hidden'});//hidden else bug with ff
         $ul.css({display: 'none', visibility: 'visible'});
         if (hidden_containers) hidden_containers.each(function () {
           var $this = $(this);
@@ -508,6 +527,9 @@
     /* End Form each */
 
   };
+
   /* End the Plugin */
 
 })(jQuery);
+
+
