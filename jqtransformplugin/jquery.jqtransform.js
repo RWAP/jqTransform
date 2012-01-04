@@ -22,8 +22,11 @@
     // used to restrict the styling to only certain elements of the form
     restrictSelector: '',
 
-    // restrict styleing only to these elements
-    restrictElements: 'submit text checkbox radio textarea select'.split(' ')
+    // restrict styling only to these elements
+    restrictElements: 'submit text checkbox radio textarea select'.split(' '),
+    // selector that specified which elemenets to exclude
+    // ie. exclude: '#myId select'
+    exclude: ''
   };
   var jqTransformImgPreloaded = false;
 
@@ -370,8 +373,10 @@
           /* Fire the onchange event */
           if (prevIndex != $select[0].selectedIndex) {
             var $clone = $wrapper.data('clone');
-            var $original_select = $('select', $clone);
-            $original_select.trigger('change');
+            var $clone_select = $('select', $clone);
+            var $original_select = $('select', $wrapper);
+            $original_select.val($select.val()).trigger('click').trigger('change');
+            $clone_select.val($select.val()).trigger('click').trigger('change');
           }
           $('span:eq(0)', $wrapper).html($(this).html());
           $ul.trigger('collapse');
@@ -493,27 +498,39 @@
       }
 
       if ($.inArray('submit', opt.restrictElements) > -1) {
-        $('input:submit, input:reset, input[type="button"]', context).jqTransInputButton();
+        $('input:submit, input:reset, input[type="button"]', context)
+          .not(opt.exclude)
+          .jqTransInputButton();
       }
 
       if ($.inArray('text', opt.restrictElements) > -1) {
-        $('input:text, input:password', context).jqTransInputText();
+        $('input:text, input:password', context)
+          .not(opt.exclude)
+          .jqTransInputText();
       }
 
       if ($.inArray('checkbox', opt.restrictElements) > -1) {
-        $('input:checkbox', context).jqTransCheckBox();
+        $('input:checkbox', context)
+          .not(opt.exclude)
+          .jqTransCheckBox();
       }
 
       if ($.inArray('radio', opt.restrictElements) > -1) {
-        $('input:radio', context).jqTransRadio();
+        $('input:radio', context)
+          .not(opt.exclude)
+          .jqTransRadio();
       }
 
       if ($.inArray('textarea', opt.restrictElements) > -1) {
-        $('textarea', context).jqTransTextarea();
+        $('textarea', context)
+          .not(opt.exclude)
+          .jqTransTextarea();
       }
 
       if ($.inArray('select', opt.restrictElements) > -1) {
-        $('select', context).jqTransSelect();
+        $('select', context)
+          .not(opt.exclude)
+          .jqTransSelect();
       }
 
       selfForm.bind('reset', function () {
